@@ -12,11 +12,84 @@ class Tree {
     constructor(array) {
         //make sure to sort and remove duplicates from the array
         this.array = this.removeDuplicates(mergeSort(array))
-        this.root = this.buildTree(this.array)
+        this.root = this.buildTree(this.array, 0, this.array.length - 1)
     }
 
-    buildTree(array) {
+    buildTree(array, start, end) {
+        if (start > end) return null; //base recursion, it will reach a stopping point since "mid - 1" and mid + 1
+
+        let mid = parseInt((start + end)/2);
+        let root = new Node(array[mid]);
+
+        root.leftTree = this.buildTree(array, start, mid - 1); // mid + 1 and mid - 1 to not include the root node, returns null when it is in the wrong tree
+        root.rightTree = this.buildTree(array, mid + 1, end);
+
+        return root;
+    }
+
+    insert(value, root = this.root) { //When inserting a node, it is always going to become a leaf node
+        if (root == null) {
+            return (root = new Node(value));
+        }
+
+        if (value > root.data) {
+            root.rightTree = this.insert(value, root.rightTree)
+        } else {
+            root.leftTree = this.insert(value, root.leftTree)
+        }
+
+        return root;
+    };
+
+    delete(value, root = this.root) {
+        //base recursion 
+        if (root == null);
+        return root;
+
+        //go down the tree, searching
+        if (value > root.data) {
+            root.rightTree = this.delete(value, root.rightTree) 
+        } else if (value < root.data) {
+            root.leftTree = this.delete(value, root.leftTree)
+        } else { //if value equals to root 
+            if (root.leftTree == null) { //if root has no left child or one child
+                return root.rightTree; //this will replace the previos root.subtree if it is the child left or return null if not
+            } else if (root.rightTree == null) { //alternate to above scenario
+                return root.leftTree; 
+            } 
+            // we are not actually deleting it, just replacing it with another node or setting to null
+
+            root.data = minValue(root); //if it has two child, we want to get smallest of right subtree, replace deleted node with it
+            root.rightTree = this.delete(root.rightTree, root.data) //root.rightTree now treated as value and root.data as root
+        }
+
+        return root;
+        //delete a leaf in a tree, structure of tree will not change *setting that node to equal null
+        //delete a node with one child, replace deleted node with child, setting deceased's parent node rightTree/leftTree = child
+        //delete a node with two child, 1) the smallest (farthest left) of the right subtree 2) replace deleted node with it, if it has child, it should connect to parent of previous parent node
+
+        // function minValue(root) {
+        //     let min = root.data;
+        //     while (root != null) {
+        //       min = root.data;
+        //       root = root.leftPart;
+        //     }
+        //     return min;
+        //   }
+    };
+
+    find(value, root = this.root) {
+        if (root === null) return false;
+
+        if (root.data === value) return root;
+
+        if (value > root.data) {
+            return this.find(value, root.rightTree)
+        } else {
+            return this.find(value, root.leftTree)
+        }
         
+        //return root;
     }
 
     removeDuplicates(array) {
