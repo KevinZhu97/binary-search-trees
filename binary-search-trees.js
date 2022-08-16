@@ -1,4 +1,4 @@
-let testArray = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
+let testArray = [1, 2, 3, 4, 5];
 
 class Node {
     constructor(data) {
@@ -11,7 +11,7 @@ class Node {
 class Tree {
     constructor(array) {
         //make sure to sort and remove duplicates from the array
-        this.array = this.removeDuplicates(mergeSort(array))
+        this.array = this.removeDuplicates(this.mergeSort(array))
         this.root = this.buildTree(this.array, 0, this.array.length - 1)
     }
 
@@ -167,7 +167,6 @@ class Tree {
 
     merge(leftHalf, rightHalf) {
         let final = []
-        console.log(leftHalf)
     
         while (leftHalf.length > 0 && rightHalf.length > 0) {
             let arrayWithLowest = (leftHalf[0] > rightHalf[0]) ? rightHalf : leftHalf;
@@ -247,4 +246,10 @@ function minValue(root) {
       root = root.leftPart;
     }
     return min;
-  }
+}
+
+let tree = new Tree(testArray);
+tree.insert(7)
+tree.delete(1)
+console.log(tree.find(1))
+console.log(tree.isBalanced())
