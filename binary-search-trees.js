@@ -43,8 +43,9 @@ class Tree {
 
     delete(value, root = this.root) {
         //base recursion 
-        if (root == null);
-        return root;
+        if (root == null) {
+            return root; 
+        };
 
         //go down the tree, searching
         if (value > root.data) {
@@ -59,23 +60,14 @@ class Tree {
             } 
             // we are not actually deleting it, just replacing it with another node or setting to null
 
-            root.data = minValue(root); //if it has two child, we want to get smallest of right subtree, replace deleted node with it
-            root.rightTree = this.delete(root.rightTree, root.data) //root.rightTree now treated as value and root.data as root
+            root.data = minValue(root); //if it has two child, we want to get smallest of right subtree
+            root.rightTree = this.delete(root.rightTree, root.data) //root.rightTree now treated as value and root.data as root, we are deleting it while simultaneously setting it as equal to the original root.rightTree
         }
 
         return root;
         //delete a leaf in a tree, structure of tree will not change *setting that node to equal null
         //delete a node with one child, replace deleted node with child, setting deceased's parent node rightTree/leftTree = child
         //delete a node with two child, 1) the smallest (farthest left) of the right subtree 2) replace deleted node with it, if it has child, it should connect to parent of previous parent node
-
-        // function minValue(root) {
-        //     let min = root.data;
-        //     while (root != null) {
-        //       min = root.data;
-        //       root = root.leftPart;
-        //     }
-        //     return min;
-        //   }
     };
 
     find(value, root = this.root) {
@@ -91,6 +83,83 @@ class Tree {
         
         //return root;
     }
+
+    traverse(root, array) {
+        if (array !== undefined) array.push(root.data);
+        if (root.leftPart !== null) {
+          this.traverse(root.leftTree, array);
+        }
+    
+        if (root.rightPart !== null) {
+          this.traverse(root.rightTree, array);
+        }
+        return array;
+      }
+
+    levelOrder(root) {
+        const queue = [];
+        const result = [];
+
+        if (root === null) return;
+
+        queue.push(root);
+
+        while (queue.length > 0) {
+            let current = queue.shift()
+
+            if (current.rightTree != null) queue.push(current.rightTree);
+            if (current.leftTree != null) queue.push(current.leftTree);
+        }
+
+        return result;
+    }
+
+    preorder(root) {
+        if (root == null) return;
+    
+        if (root.data !== undefined) {
+          this.preorderData.push(root.data);
+        }
+    
+        if (root.leftPart !== null) {
+          this.preorder(root.leftTree);
+        }
+    
+        if (root.rightPart !== null) {
+          this.preorder(root.rightTree);
+        }
+      }
+    
+    inorder(root) {
+    if (root == null) return;
+
+    if (root.leftPart !== null) {
+        this.inorder(root.leftTree);
+    }
+
+    if (root.data !== undefined) {
+        this.inorderData.push(root.data);
+    }
+
+    if (root.rightPart !== null) {
+        this.inorder(root.rightTree);
+    }
+    }
+    
+    postorder(root) {
+    if (root == null) return;
+
+    if (root.leftPart !== null) {
+        this.postorder(root.leftTree);
+    }
+
+    if (root.rightPart !== null) {
+        this.postorder(root.rightTree);
+    }
+
+    if (root.data !== undefined) this.postorderData.push(root.data);
+    }
+    
 
     removeDuplicates(array) {
         return [...new Set(array)];
@@ -118,4 +187,64 @@ class Tree {
         let rightHalf = this.mergeSort(array.slice(arrayMidpoint));
         return this.merge(leftHalf, rightHalf)
     }
+
+    height(root) {
+        if (root == null) {
+          return -1;
+        } else {
+          let left = this.height(root.leftTree);
+          let right = this.height(root.rightTree);
+    
+          return Math.max(left, right) + 1;
+        }
+      }
+
+    depth(node, root = this.root) {
+    let depth = -1;
+
+    if (node == null) return depth;
+
+    if (
+        root == node ||
+        (depth = this.depth(node, root.leftPart)) >= 0 ||
+        (depth = this.depth(node, root.rightPart) >= 0)
+    ) {
+        return depth + 1;
+    }
+
+    return depth;
+    }
+
+    isBalanced(root) {
+    if (root == null) return false;
+
+    let leftHalf = root.leftPart;
+    let rightHalf = root.rightPart;
+
+    if (Math.abs(this.height(leftHalf) - this.height(rightHalf)) > 1) {
+        return false;
+    } else {
+        return true;
+    }
+    }
+
+    rebalance() {
+    if (this.isBalanced(this.root)) return this.root;
+
+    let rebalancedNewTreeArray = [];
+    rebalancedNewTreeArray = this.traverse(this.root, rebalancedNewTreeArray);
+
+    let balancedTree = new Tree(rebalancedNewTreeArray);
+
+    return balancedTree.root;
+    }
 }
+
+function minValue(root) {
+    let min = root.data;
+    while (root != null) {
+      min = root.data;
+      root = root.leftPart;
+    }
+    return min;
+  }
